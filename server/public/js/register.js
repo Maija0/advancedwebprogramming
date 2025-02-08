@@ -2,6 +2,10 @@ const startRegistration = () => {
     document.getElementById("registerForm").addEventListener("submit", (event) => {
         fetchData(event)
     })
+    
+    redirectToLogin.addEventListener("click", async function (event) {
+        window.location.href = "/login.html"
+    })
 }
 
 const fetchData = async (event) => {
@@ -28,7 +32,6 @@ const fetchData = async (event) => {
     } catch (error) {
         console.log(`Error registering user, ${error.message}`)
     }
-
 }
 
 document.addEventListener("DOMContentLoaded",startRegistration())
