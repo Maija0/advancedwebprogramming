@@ -4,7 +4,7 @@ import router from "./src/routes/user"
 import morgan from "morgan"
 import mongoose, { Connection } from 'mongoose'
 import dotenv from "dotenv"
-//import cors, {CorsOptions} from 'cors'
+import cors, {CorsOptions} from 'cors'
 
 dotenv.config()
 
@@ -16,13 +16,13 @@ mongoose.connect(mongoDB)
 mongoose.Promise = Promise
 const db: Connection = mongoose.connection
 db.on("error", console.error.bind(console, "MongoDB connection error"))
-/*
+
 const corsOptions: CorsOptions = {
-    origin: ['http://localhost:3000', 'http://127.0.0.1:5500'],
+    origin: ['http://localhost:3001'],
     optionsSuccessStatus: 200,
 }
 
-app.use(cors(corsOptions))*/
+app.use(cors(corsOptions))
 app.use(morgan("dev"))
 app.use(express.json())
 
