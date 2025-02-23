@@ -6,12 +6,11 @@ import Button from '@mui/material/Button';
 const Header = () => {
 
     return (
-        <AppBar position="absolute"
-        sx={{width: "100%"}}
-        >
+        <AppBar position="static">
             <Toolbar>
                 <Button color="inherit" component={Link} to="/">Home</Button>
                 <Button color="inherit" component={Link} to="/Login">Logout</Button>
+                <Button color="inherit" component={Link} to="/Kanban">Kanban</Button>
             </Toolbar>
         </AppBar>
 

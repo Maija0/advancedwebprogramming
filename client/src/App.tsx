@@ -1,18 +1,21 @@
-import {BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 import Login from "./components/Login";
 import Register from "./components/Register";
+import Home from "./components/Home";
+import Kanban from "./components/Kanban";
 
 function App() {
-  return (
+  return ( 
     <BrowserRouter>
-          <h1>Full stack app</h1>
-          <Header /> 
-          <Routes> 
-          <Route path="/Login" element={<Login />} />
-          <Route path="/Register" element={<Register />} />  
-        </Routes>
-      </BrowserRouter>
-  )
+      <Header />
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/Kanban" element={<Kanban />} />
+        <Route path="/Login" element={<Login />} />
+        <Route path="/Register" element={<Register />} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
-export default App
+export default App;
