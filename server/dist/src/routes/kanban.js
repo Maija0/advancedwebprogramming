@@ -34,8 +34,10 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importStar(require("express"));
+const express_validator_1 = require("express-validator");
 const validateToken_1 = require("../middleware/validateToken");
 const Board_1 = require("../models/Board");
+const Column_1 = require("../models/Column");
 const kanbanRouter = (0, express_1.Router)();
 kanbanRouter.use(express_1.default.json());
 // create a new board 
@@ -49,6 +51,35 @@ kanbanRouter.post("/boards", validateToken_1.validateToken, async (req, res) => 
     }
     catch (error) {
         console.log("Error when creating a new board", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+// get users boards
+kanbanRouter.get("/boards", validateToken_1.validateToken, async (req, res) => {
+    try {
+        const boards = await Board_1.Board.find({ userId: req.user?.id });
+        if (!boards) {
+            res.status(404).json({ message: "No boards found" });
+            return;
+        }
+        res.status(200).json(boards);
+    }
+    catch (error) {
+        console.log("Error fetching boards", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+// create a new column
+kanbanRouter.post("/columns", (0, express_validator_1.body)("name"), (0, express_validator_1.body)("boardId"), validateToken_1.validateToken, async (req, res) => {
+    try {
+        const { name, boardId } = req.body;
+        const board = await Board_1.Board.findById(boardId);
+        const newColumn = new Column_1.Column({ name, boardId });
+        await newColumn.save();
+        res.status(200).json({ message: "Created column:", newColumn });
+    }
+    catch (error) {
+        console.log("Error when creating adding a column", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
