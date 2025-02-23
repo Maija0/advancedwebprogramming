@@ -8,11 +8,11 @@ import { body, Result, ValidationError, validationResult } from 'express-validat
 import { validateToken } from '../middleware/validateToken'
 import { User } from "../models/User";
 
-const router: Router = Router()
-router.use(express.json())
-router.use(express.static(path.join(__dirname, "../public")))
+const userRouter: Router = Router()
+userRouter.use(express.json())
+//userRouter.use(express.static(path.join(__dirname, "../public")))
 
-router.post("/user/register", 
+userRouter.post("/user/register", 
     body("email").isEmail(),
     body("password").isLength({min: 3}),
     async (req: Request, res: Response) => {
@@ -45,7 +45,7 @@ router.post("/user/register",
     }
 )
 
-router.post("/user/login", 
+userRouter.post("/user/login", 
     body("email").isEmail(),
     body("password").isLength({min: 3}),
     async (req: Request, res: Response) => {
@@ -59,8 +59,9 @@ router.post("/user/login",
             if(bcrypt.compareSync(req.body.password, user.password)) {
                 const jwtPayload: JwtPayload = {
                     email: user.email,
+                    id: user._id.toString(),
                 }
-                const token: string = jwt.sign(jwtPayload, process.env.SECRET as string, { expiresIn: "2m"})
+                const token: string = jwt.sign(jwtPayload, process.env.SECRET as string, { expiresIn: "1d"})
 
                 res.status(200).json({success:true, token})
                 return
@@ -75,9 +76,9 @@ router.post("/user/login",
     }
 )
 
-router.get("/private", validateToken, async (req: Request, res: Response) => {
+userRouter.get("/private", validateToken, async (req: Request, res: Response) => {
     res.status(200).json({message: "This is protected secure route!"})
     return
 })
 
-export default router
+export default userRouter

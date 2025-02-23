@@ -3,6 +3,7 @@ import mongoose, {Document, Schema} from "mongoose";
 interface IUser extends Document {
     email: string
     password: string
+    _id: mongoose.Types.ObjectId;
 }
 
 const UserSchema: Schema = new Schema({

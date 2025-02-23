@@ -4,8 +4,12 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-interface CustomRequest extends Request {
+export interface CustomRequest extends Request {
     user?: JwtPayload
+}
+export interface CustomJwt extends JwtPayload {
+    id: string,
+    email: string,
 }
 
 export const validateToken = (req: CustomRequest, res: Response, next: NextFunction) => {
@@ -22,10 +26,10 @@ export const validateToken = (req: CustomRequest, res: Response, next: NextFunct
     }
 
     try {
-        const verified: JwtPayload = jwt.verify(token, process.env.SECRET as string) as JwtPayload
+        const verified = jwt.verify(token, process.env.SECRET as string) as CustomJwt
         req.user = verified
         next()
     } catch (error:any) {
-        res.status(401).json({message: "Error verifying token"})
+        res.status(401).json({message: "Error verifying token", error})
     }
 }

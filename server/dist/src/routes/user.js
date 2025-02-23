@@ -37,16 +37,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importStar(require("express"));
-const path_1 = __importDefault(require("path"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const express_validator_1 = require("express-validator");
 const validateToken_1 = require("../middleware/validateToken");
 const User_1 = require("../models/User");
-const router = (0, express_1.Router)();
-router.use(express_1.default.json());
-router.use(express_1.default.static(path_1.default.join(__dirname, "../public")));
-router.post("/user/register", (0, express_validator_1.body)("email").isEmail(), (0, express_validator_1.body)("password").isLength({ min: 3 }), async (req, res) => {
+const userRouter = (0, express_1.Router)();
+userRouter.use(express_1.default.json());
+//userRouter.use(express.static(path.join(__dirname, "../public")))
+userRouter.post("/user/register", (0, express_validator_1.body)("email").isEmail(), (0, express_validator_1.body)("password").isLength({ min: 3 }), async (req, res) => {
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
         console.log(errors);
@@ -70,7 +69,7 @@ router.post("/user/register", (0, express_validator_1.body)("email").isEmail(), 
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-router.post("/user/login", (0, express_validator_1.body)("email").isEmail(), (0, express_validator_1.body)("password").isLength({ min: 3 }), async (req, res) => {
+userRouter.post("/user/login", (0, express_validator_1.body)("email").isEmail(), (0, express_validator_1.body)("password").isLength({ min: 3 }), async (req, res) => {
     try {
         const user = await User_1.User.findOne({ email: req.body.email });
         if (!user) {
@@ -80,8 +79,9 @@ router.post("/user/login", (0, express_validator_1.body)("email").isEmail(), (0,
         if (bcrypt_1.default.compareSync(req.body.password, user.password)) {
             const jwtPayload = {
                 email: user.email,
+                id: user._id.toString(),
             };
-            const token = jsonwebtoken_1.default.sign(jwtPayload, process.env.SECRET, { expiresIn: "2m" });
+            const token = jsonwebtoken_1.default.sign(jwtPayload, process.env.SECRET, { expiresIn: "1d" });
             res.status(200).json({ success: true, token });
             return;
         }
@@ -93,8 +93,8 @@ router.post("/user/login", (0, express_validator_1.body)("email").isEmail(), (0,
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-router.get("/private", validateToken_1.validateToken, async (req, res) => {
+userRouter.get("/private", validateToken_1.validateToken, async (req, res) => {
     res.status(200).json({ message: "This is protected secure route!" });
     return;
 });
-exports.default = router;
+exports.default = userRouter;

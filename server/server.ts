@@ -1,6 +1,7 @@
 import express, {Express} from "express"
 import path from "path"
-import router from "./src/routes/user"
+import userRouter from "./src/routes/user"
+import kanbanRouter from "./src/routes/kanban"
 import morgan from "morgan"
 import mongoose, { Connection } from 'mongoose'
 import dotenv from "dotenv"
@@ -31,7 +32,7 @@ app.get("/", (reg,res) => {
     res.sendFile(path.join(__dirname, "../public/register.html"));
 })
 
-app.use("/api", router)
+app.use("/api", userRouter, kanbanRouter)
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}`)

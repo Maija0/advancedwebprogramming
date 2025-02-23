@@ -24,7 +24,7 @@ const validateToken = (req, res, next) => {
         next();
     }
     catch (error) {
-        res.status(401).json({ message: "Error verifying token" });
+        res.status(401).json({ message: "Error verifying token", error });
     }
 };
 exports.validateToken = validateToken;

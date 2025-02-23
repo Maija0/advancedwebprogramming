@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const user_1 = __importDefault(require("./src/routes/user"));
+const kanban_1 = __importDefault(require("./src/routes/kanban"));
 const morgan_1 = __importDefault(require("morgan"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -29,7 +30,7 @@ app.use(express_1.default.static(path_1.default.join(__dirname, "../public")));
 app.get("/", (reg, res) => {
     res.sendFile(path_1.default.join(__dirname, "../public/register.html"));
 });
-app.use("/api", user_1.default);
+app.use("/api", user_1.default, kanban_1.default);
 app.listen(port, () => {
     console.log(`Server running on port ${port}`);
 });
