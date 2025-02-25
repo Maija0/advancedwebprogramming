@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {Link} from 'react-router-dom'
+import {Card, CardContent,Typography, CardActionArea} from '@mui/material/';
 
 interface Board {
     _id: string;
@@ -29,18 +30,25 @@ const Home = () => {
     }
     fetchBoards();
 }, []);
+
 return (
     <div>
-        <h1>Boards here:</h1>
-        <ul>
-            {boards.map((board) => (
-                <li key={board._id}>
-                <Link to={`/Kanban/${board._id}`}>{board.name}</Link>
-            </li>
-            ))}
-        </ul>
+        {boards.map((board) => (            
+    <Card sx={{maxWidth:345, margin: 3, border: '1px solid blue', }} key={board._id}>
+        <CardActionArea component={Link} to={`/Kanban/${board._id}`}>
+            <CardContent>
+                <Typography gutterBottom variant="h5" component="div">
+                    {board.name}
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            This is a kanban board, click to open.
+          </Typography>
+        </CardContent>
+      </CardActionArea>
+    </Card>
+        ))}
     </div>
-    )
+  );
 }
 
 export default Home;
