@@ -56,4 +56,24 @@ kanbanRouter.post("/columns",
     }
 })
 
+//get columns with boardId
+kanbanRouter.get("/columns/:boardId",validateToken, async (req: CustomRequest, res: Response) => { 
+    try {
+        const {boardId} = req.params;
+
+        const board = await Board.findById(boardId);
+        if (!board){
+            res.status(404).json({message: "Board wasn't found"});
+            return
+        }
+        const columns = await Column.find({boardId})
+
+        res.status(200).json({board, columns});
+    } catch (error: any) {
+        console.log("Error fetching boards", error)
+        res.status(500).json({error: "Internal Server Error"})
+    }
+})
+
+
 export default kanbanRouter

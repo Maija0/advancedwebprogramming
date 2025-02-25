@@ -83,4 +83,21 @@ kanbanRouter.post("/columns", (0, express_validator_1.body)("name"), (0, express
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+//get columns with boardId
+kanbanRouter.get("/columns/:boardId", validateToken_1.validateToken, async (req, res) => {
+    try {
+        const { boardId } = req.params;
+        const board = await Board_1.Board.findById(boardId);
+        if (!board) {
+            res.status(404).json({ message: "Board wasn't found" });
+            return;
+        }
+        const columns = await Column_1.Column.find({ boardId });
+        res.status(200).json({ board, columns });
+    }
+    catch (error) {
+        console.log("Error fetching boards", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 exports.default = kanbanRouter;
