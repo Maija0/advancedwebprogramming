@@ -51,7 +51,7 @@ kanbanRouter.post("/columns",
        await newColumn.save()
         res.status(200).json({message: "Created column:", newColumn});
     } catch (error: any) {
-        console.log("Error when creating adding a column", error)
+        console.log("Error when adding a column", error)
         res.status(500).json({error: "Internal Server Error"})
     }
 })
@@ -71,6 +71,43 @@ kanbanRouter.get("/columns/:boardId",validateToken, async (req: CustomRequest, r
         res.status(200).json({board, columns});
     } catch (error: any) {
         console.log("Error fetching boards", error)
+        res.status(500).json({error: "Internal Server Error"})
+    }
+})
+
+// Create ticket
+kanbanRouter.post("/tickets",
+    body("name"),
+    body("columnId"),
+    validateToken, async (req: Request, res: Response) => { 
+    try {
+        const {name, columnId} = req.body;
+        const column = await Column.findById(columnId);
+        const newTicket = new Ticket({name, columnId})
+       await newTicket.save()
+        res.status(200).json({message: "Created ticket:", newTicket});
+    } catch (error: any) {
+        console.log("Error adding a ticket", error)
+        res.status(500).json({error: "Internal Server Error"})
+    }
+})
+
+
+// Get ticket
+kanbanRouter.get("/tickets/:columnId",validateToken, async (req: CustomRequest, res: Response) => { 
+    try {
+        const {columnId} = req.params;
+
+        const column = await Column.findById(columnId);
+        if (!column){
+            res.status(404).json({message: "Column wasn't found"});
+            return
+        }
+        const tickets = await Ticket.find({columnId})
+
+        res.status(200).json({tickets});
+    } catch (error: any) {
+        console.log("Error fetching tickets", error)
         res.status(500).json({error: "Internal Server Error"})
     }
 })

@@ -38,6 +38,7 @@ const express_validator_1 = require("express-validator");
 const validateToken_1 = require("../middleware/validateToken");
 const Board_1 = require("../models/Board");
 const Column_1 = require("../models/Column");
+const Ticket_1 = require("../models/Ticket");
 const kanbanRouter = (0, express_1.Router)();
 kanbanRouter.use(express_1.default.json());
 // create a new board 
@@ -79,7 +80,7 @@ kanbanRouter.post("/columns", (0, express_validator_1.body)("name"), (0, express
         res.status(200).json({ message: "Created column:", newColumn });
     }
     catch (error) {
-        console.log("Error when creating adding a column", error);
+        console.log("Error when adding a column", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
@@ -97,6 +98,37 @@ kanbanRouter.get("/columns/:boardId", validateToken_1.validateToken, async (req,
     }
     catch (error) {
         console.log("Error fetching boards", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+// Create ticket
+kanbanRouter.post("/tickets", (0, express_validator_1.body)("name"), (0, express_validator_1.body)("columnId"), validateToken_1.validateToken, async (req, res) => {
+    try {
+        const { name, columnId } = req.body;
+        const column = await Column_1.Column.findById(columnId);
+        const newTicket = new Ticket_1.Ticket({ name, columnId });
+        await newTicket.save();
+        res.status(200).json({ message: "Created ticket:", newTicket });
+    }
+    catch (error) {
+        console.log("Error adding a ticket", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+// Get ticket
+kanbanRouter.get("/tickets/:columnId", validateToken_1.validateToken, async (req, res) => {
+    try {
+        const { columnId } = req.params;
+        const column = await Column_1.Column.findById(columnId);
+        if (!column) {
+            res.status(404).json({ message: "Column wasn't found" });
+            return;
+        }
+        const tickets = await Ticket_1.Ticket.find({ columnId });
+        res.status(200).json({ tickets });
+    }
+    catch (error) {
+        console.log("Error fetching tickets", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
