@@ -48,7 +48,7 @@ kanbanRouter.post("/columns",
         const {name, boardId} = req.body;
         const board = await Board.findById(boardId);
         const newColumn = new Column({name, boardId})
-       await newColumn.save()
+        await newColumn.save()
         res.status(200).json({message: "Created column:", newColumn});
     } catch (error: any) {
         console.log("Error when adding a column", error)
