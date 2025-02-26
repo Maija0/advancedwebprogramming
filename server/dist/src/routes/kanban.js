@@ -101,6 +101,24 @@ kanbanRouter.get("/columns/:boardId", validateToken_1.validateToken, async (req,
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+// delete column with column id
+kanbanRouter.delete("/columns/:columnId", validateToken_1.validateToken, async (req, res) => {
+    try {
+        const { columnId } = req.params;
+        const column = await Column_1.Column.findById(columnId);
+        if (!column) {
+            res.status(404).json({ message: "Column wasn't found" });
+            return;
+        }
+        await Ticket_1.Ticket.deleteMany({ columnId });
+        await column.deleteOne();
+        res.status(200).json({ message: "Column deleted" });
+    }
+    catch (error) {
+        console.log("Error deleting column", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
 // Create ticket
 kanbanRouter.post("/tickets", (0, express_validator_1.body)("name"), (0, express_validator_1.body)("columnId"), validateToken_1.validateToken, async (req, res) => {
     try {

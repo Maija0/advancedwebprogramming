@@ -109,6 +109,23 @@ const Kanban = () => {
         setNewTicketName((prev) => ({ ...prev, [columnId]: name }));
       };
 
+    // Delete column
+    const deleteColumn = async (columnId: string) => {
+        const token = localStorage.getItem("token")
+        try {
+            const response = await fetch(`http://localhost:3000/api/columns/${columnId}`,{
+                method: "DELETE",
+                headers: {"Authorization": `Bearer ${token}`, "Content-Type": "application/json"},
+            })
+            if (!response.ok) {
+                throw new Error("Error deleting column");
+            }
+            setColumns((prevColumns) => prevColumns.filter((column) => column._id !== columnId))
+        } catch (error) {
+            console.log(`Error deleting column, ${error.message}`);
+        }
+    }
+    
 const handleDragnAndDrop = (results) => {
     // dragged tickets source, destination and id
     const {source, destination, draggableId} = results;
@@ -162,12 +179,13 @@ const handleDragnAndDrop = (results) => {
             <Typography variant="h6" sx={{textAlign: 'center', fontSize: 15,}}>
                 {column.name}
             </Typography>
+            <Button onClick={() => deleteColumn(column._id)}> Delete Column </Button>
             <Droppable droppableId={column._id}> 
                 {(provided) => (
                     <div ref={provided.innerRef} {...provided.droppableProps}
                     style={{flexGrow: 1, overflowY: "auto", padding: 5}}
                 >
-            {column.tickets.map((ticket, index) => (
+            {(column.tickets || []).map((ticket, index) => (
                 <Draggable key= {ticket._id} draggableId={ticket._id} index={index}>
                     {(provided) => (
                         <Paper
