@@ -21,9 +21,20 @@ const Kanban = () => {
                 if (!response.ok) {
                     throw new Error("Error fetching columns");
                 }
-                const data = await response.json();
-                setColumns(data.columns);
-            }catch (error) {
+                const columnData = await response.json();
+                const columnsList = columnData.columns;
+                columnsList.map(async(column: Column) =>  {
+                    const ticketResponse = await fetch(`http://localhost:3000/api/tickets/${column._id}`, {
+                        method: "GET",
+                        headers: {"Authorization": `Bearer ${token}`, "Content-type": "application/json" }
+                })
+                const ticketData = await ticketResponse.json();
+                const ticketsList = ticketData.tickets;
+
+                return {...column, tickets:ticketsList};
+                })
+                setColumns(fetchTickets);
+            } catch (error) {
                 console.log(`Error fetching columns, ${error.message}`);
             }
         }
@@ -40,14 +51,29 @@ const Kanban = () => {
                 padding:2,
                 display: 'flex',
                 border: '1px solid blue',
-                margin: 1
+                margin: 1,
+                flexDirection: "column"
             }}
             >
-            <Typography variant="h6" sx={{textAlign: 'center'}}>
+            <Typography variant="h6" sx={{textAlign: 'center', fontSize: 15,}}>
             {column.name}
             </Typography>
-            <div style={{flexGrow: 1, borderRadius:"10px"}}>
-            {/*Modify for ticket space*/}
+            <div style={{flexGrow: 1, overflowY: "auto", padding: 5}}>
+            {column.tickets?.map((ticket) => (
+            <Paper
+                key={ticket._id}
+                sx={{
+                    padding:2,
+                    border: '1px solid blue',
+                    marginBottom: 1,
+                    minHeight: 50,
+                    maxHeight: 50,
+                }}
+                >
+                    {/*Ticket title*/}    
+                    <Typography sx={{fontSize:12}}>{ticket.name}</Typography>
+            </Paper>
+            ))}
             </div>
             </Paper>
             </Grid>
