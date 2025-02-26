@@ -5,13 +5,16 @@ import {Grid,Typography, Paper,TextField, Button,Box} from '@mui/material/';
 interface Column {
     _id: string;
     name: string;
+    tickets: {_id: string; name: string} [];
 }
 
 const Kanban = () => {
     const {boardId } = useParams<{boardId:string }>();
     const [columns, setColumns] = useState<Column[]>([]);
     const [newColumnName, setNewColumnName] = useState("");
+    const [newTicketName, setNewTicketName] =  useState<{ [key: string]: string }>({});
 
+    // Fetch columns & tickets
     const fetchColumns = async() =>{
         const token = localStorage.getItem("token");
         try{
@@ -30,6 +33,9 @@ const Kanban = () => {
                         method: "GET",
                         headers: {"Authorization": `Bearer ${token}`, "Content-type": "application/json" }
                 })
+                if (!ticketResponse.ok) {
+                    throw new Error("Error fetching tickets");
+                }
             const ticketData = await ticketResponse.json();
             const ticketsList = ticketData.tickets;
 
@@ -41,11 +47,12 @@ const Kanban = () => {
             console.log(`Error fetching columns, ${error.message}`);
         }
     }
-    //useeffect that calls fetchColumns when boardId is updated
+    // useEffect that calls fetchColumns when boardId is updated
     useEffect(() => {
         fetchColumns();
     }, [boardId])
 
+    // Create a new column
     const createColumn = async () => {
         if (!newColumnName.trim()){
             return;
@@ -58,17 +65,50 @@ const Kanban = () => {
                 body: JSON.stringify({name: newColumnName, boardId: boardId})
             })
             if (!response.ok) {
-                throw new Error("Error creating clumn");
+                throw new Error("Error creating column");
             }
             const newColumn: Column = await response.json();
             setColumns([...columns, newColumn]);
             fetchColumns();
             setNewColumnName("");
         } catch (error) {
-            console.log(`Error creating board, ${error.message}`);
+            console.log(`Error creating column, ${error.message}`);
         }
     }
     
+    // Create a new ticket
+    const createTicket = async (columnId: string) => {
+        const token = localStorage.getItem("token")
+        try {
+            const response = await fetch("http://localhost:3000/api/tickets",{
+                method: "POST",
+                headers: {"Authorization": `Bearer ${token}`, "Content-Type": "application/json"},
+                body: JSON.stringify({name: newTicketName[columnId], columnId})
+            })
+            if (!response.ok) {
+                throw new Error("Error creating ticket");
+            }
+            const newTicket = await response.json();
+            // add new ticket to the right column in the state
+            setColumns((prevColumns) => prevColumns.map((column) =>
+                column._id === columnId
+                ? { ...column, tickets: [...(column.tickets), newTicket.newTicket] }
+                :column // column id didn't match --> dont change array
+        ));
+
+        setNewTicketName("");
+        } catch (error) {
+            console.log(`Error creating ticket, ${error.message}`);
+        }
+    }
+    /*
+    * TicketNameChange is called when input field is changed
+    * It updates the newTicketName state with the tickets name for a specific column
+    */
+    const TicketNameChange = (columnId: string, name: string) => {
+        setNewTicketName((prev) => ({ ...prev, [columnId]: name }));
+      };
+
     return (
     <div>
     <Box sx={{display:"flex", margin:2}}>
@@ -111,6 +151,10 @@ const Kanban = () => {
             </Paper>
             ))}
             </div>
+            <TextField label="new ticket" variant="outlined" value={newTicketName[column._id]|| ""} onChange={(e) => TicketNameChange(column._id, e.target.value)}
+            sx={{ margin:1}}
+            />
+            <Button onClick={() => createTicket(column._id)}> Add a ticket </Button>
             </Paper>
             </Grid>
         ))}
