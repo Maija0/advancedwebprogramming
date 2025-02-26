@@ -132,5 +132,23 @@ kanbanRouter.get("/tickets/:columnId",validateToken, async (req: CustomRequest, 
     }
 })
 
+// delete ticket with ticket id
+kanbanRouter.delete("/tickets/:ticketId", validateToken, async (req: CustomRequest, res: Response) => { 
+    try {
+        const {ticketId} = req.params;
+
+        const ticket = await Ticket.findById(ticketId);
+        if (!ticket){
+            res.status(404).json({message: "Ticket wasn't found"});
+            return
+        }
+        await ticket.deleteOne()
+        res.status(200).json({message: "Ticket deleted"});
+    } catch (error: any) {
+        console.log("Error deleting ticket", error)
+        res.status(500).json({error: "Internal Server Error"})
+    }
+})
+
 
 export default kanbanRouter

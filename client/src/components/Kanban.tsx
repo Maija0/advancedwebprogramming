@@ -91,15 +91,32 @@ const Kanban = () => {
             }
             const newTicket = await response.json();
             // add new ticket to the right column in the state
-            setColumns((prevColumns) => prevColumns.map((column) =>
-                column._id === columnId
-                ? { ...column, tickets: [...(column.tickets), newTicket.newTicket] }
-                :column // column id didn't match --> dont change array
+            setColumns((prevColumns) => prevColumns.map((column) => column._id === columnId 
+            ? { ...column, tickets: [...(column.tickets), newTicket.newTicket] } : column
         ));
 
         setNewTicketName("");
         } catch (error) {
             console.log(`Error creating ticket, ${error.message}`);
+        }
+    }
+    // Delete ticket
+    const deleteTicket = async (ticketId: string, columnId:string) => {
+        const token = localStorage.getItem("token")
+        try {
+            const response = await fetch(`http://localhost:3000/api/tickets/${ticketId}`,{
+                method: "DELETE",
+                headers: {"Authorization": `Bearer ${token}`, "Content-Type": "application/json"},
+            })
+            if (!response.ok) {
+                throw new Error("Error deleting ticket");
+            }
+            setColumns((prevColumns) => prevColumns.map((column) => column._id === columnId 
+            ? { ...column, tickets: column.tickets.filter((ticket) => ticket._Id !== ticketId)} : column
+            ));
+
+        } catch (error) {
+            console.log(`Error deleting ticket, ${error.message}`);
         }
     }
 
@@ -202,6 +219,7 @@ const handleDragnAndDrop = (results) => {
                             }}
                             >
                             <Typography sx={{fontSize:12}}>{ticket.name}</Typography>
+                            <Button onClick={() => deleteTicket(ticket._id, column._id)}> Delete Ticket </Button>
                         </Paper>
                     )}
                 </Draggable>
