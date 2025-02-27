@@ -1,15 +1,14 @@
 import {Link} from 'react-router-dom'
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import Button from '@mui/material/Button';
 import HomeIcon from '@mui/icons-material/Home';
-import IconButton from '@mui/material/IconButton';
+import {Typography, Button, Toolbar, IconButton, AppBar } from '@mui/material/';
+
 
 const Header = () => {
 
     return (
         <AppBar position="static">
             <Toolbar>
+            <Typography variant="h6" sx={{ textAlign: 'center', fontSize: 15 }}> Web task manager application</Typography>
                 <IconButton color="inherit" component={Link} to="/">
                     <HomeIcon/>
                 </IconButton>

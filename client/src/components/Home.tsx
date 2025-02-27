@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, Typography, CardActionArea, Box, Button, TextField } from '@mui/material/';
+import "../App.css"
 
 interface Board {
   _id: string;
@@ -62,16 +63,17 @@ const Home = () => {
           value={newBoardName}
           onChange={(e) => setNewBoardName(e.target.value)}
         />
-        <Button onClick={createBoard}> Add a board </Button>
+        <Button onClick={createBoard} variant="outlined"> Add a board </Button>
       </Box>
       <Box sx={{ display: 'flex', margin: 2 }}>
         {boards.map((board) => (
           <Card sx={{ maxWidth: 345, minWidth: 100, margin: 1, border: '1px solid blue' }} key={board._id}>
             {' '}
-            {/* Fix the ratios or create separate file mobile, pc etc*/}
             <CardActionArea component={Link} to={`/Kanban/${board._id}`}>
               <CardContent>
-                <Typography gutterBottom variant="h5" component="div">
+                <Typography gutterBottom variant="h6" component="div"
+                  
+                  >
                   {board.name}
                 </Typography>
                 <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -79,7 +81,7 @@ const Home = () => {
                 </Typography>
               </CardContent>
             </CardActionArea>
-          </Card>
+          </Card> 
         ))}
       </Box>
     </div>
