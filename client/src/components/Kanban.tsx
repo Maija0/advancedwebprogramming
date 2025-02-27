@@ -150,14 +150,22 @@ const Kanban = () => {
     }
   };
 
+  // Defines drag and drop and error handling
   const handleDragnAndDrop = (results) => {
-    // dragged tickets source, destination and id
-    const { source, destination, draggableId } = results;
+    const { source, destination, draggableId, type } = results;
 
     //error handling for non valid destination and same location
     if (!destination) return;
     if (source.droppableId === destination.droppableId && source.index === destination.index) return;
 
+    // Drag and drop for columns
+    if (type === "group") {
+      const reorderColumns = [...columns];
+      const [removedColumn] = reorderColumns.splice(source.index, 1);
+      reorderColumns.splice(destination.index,0, removedColumn);
+      setColumns(reorderColumns);
+    }
+    // Drag and drop for tickets
     // Find index for destination and source columns and theyre objects
     const destinationColumnIndex = columns.findIndex((column) => column._id === destination.droppableId);
     const sourceColumnIndex = columns.findIndex((column) => column._id === source.droppableId);
@@ -170,12 +178,13 @@ const Kanban = () => {
     newSourceTickets.splice(source.index, 1);
 
     const newDestinationTicket = destinationColumn.tickets;
-    newDestinationTicket.splice(destination.index, 0, draggedTicket); //
+    newDestinationTicket.splice(destination.index, 0, draggedTicket); 
 
     const newColumns = [...columns];
     newColumns[sourceColumnIndex] = { ...sourceColumn, tickets: newSourceTickets };
     newColumns[destinationColumnIndex] = { ...destinationColumn, tickets: newDestinationTicket };
-
+    
+    // Update state
     setColumns(newColumns);
   };
 
@@ -192,9 +201,13 @@ const Kanban = () => {
         <Button onClick={createColumn}> Add a column </Button>
       </Box>
       <DragDropContext onDragEnd={handleDragnAndDrop}>
-        <Grid container spacing={2}>
-          {columns.map((column) => (
-            <Grid item key={column._id}>
+        <Droppable droppableId="ROOT" type="group" direction="horizontal">
+        {(provided) => (
+        <Grid container spacing={2} {...provided.droppableProps} ref={provided.innerRef}>
+          {columns.map((column, index) => (
+            <Draggable key={column._id} draggableId={column._id} index={index}>
+              {(provided) => (
+            <Grid item ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
               <Paper
                 sx={{
                   width: 100,
@@ -211,9 +224,7 @@ const Kanban = () => {
                 <Button onClick={() => deleteColumn(column._id)}> Delete Column </Button>
                 <Droppable droppableId={column._id}>
                   {(provided) => (
-                    <div
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
+                    <div ref={provided.innerRef} {...provided.droppableProps}
                       style={{ flexGrow: 1, overflowY: 'auto', padding: 5 }}
                     >
                       {(column.tickets || []).map((ticket, index) => (
@@ -259,11 +270,15 @@ const Kanban = () => {
                 <Button onClick={() => createTicket(column._id)}> Add a ticket </Button>
               </Paper>
             </Grid>
-          ))}
-        </Grid>
-      </DragDropContext>
-    </div>
-  );
-};
-
+          )}
+        </Draggable>
+        ))}
+        {provided.placeholder}
+      </Grid>
+      )}
+      </Droppable>
+    </DragDropContext>
+  </div>
+);
+}
 export default Kanban;
