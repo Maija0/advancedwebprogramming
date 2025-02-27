@@ -11,9 +11,10 @@ function App() {
     <BrowserRouter>
       <Header />
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Login />} />
         <Route path="/Kanban/:boardId" element={<Kanban />} />
         <Route path="/Login" element={<Login />} />
+        <Route path="/Home" element={<Home />} />
         <Route path="/Register" element={<Register />} />
       </Routes>
     </BrowserRouter>

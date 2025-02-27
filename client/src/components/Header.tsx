@@ -9,7 +9,7 @@ const Header = () => {
         <AppBar position="static">
             <Toolbar>
             <Typography variant="h6" sx={{ textAlign: 'center', fontSize: 15 }}> Web task manager application</Typography>
-                <IconButton color="inherit" component={Link} to="/">
+                <IconButton color="inherit" component={Link} to="/Home">
                     <HomeIcon/>
                 </IconButton>
                 <Button color="inherit" component={Link} to="/Login">Logout</Button>

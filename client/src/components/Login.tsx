@@ -20,7 +20,7 @@ const Login = () => {
       const data = await response.json();
       if (data.token) {
         localStorage.setItem('token', data.token);
-        navigate('/');
+        navigate('/Home');
       }
     } catch (error) {
       console.log(`Error logging in user, ${error.message}`);
