@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { Link } from 'react-router-dom';
 
+// Register function sends data to backend (email, password) and redirects to login when successful
 const fetchData = async (email: string, password: string) => {
   try {
     const response = await fetch('http://localhost:3000/api/user/register', {

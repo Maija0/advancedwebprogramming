@@ -10,8 +10,8 @@ import { User } from "../models/User";
 
 const userRouter: Router = Router()
 userRouter.use(express.json())
-//userRouter.use(express.static(path.join(__dirname, "../public")))
 
+// Register user 
 userRouter.post("/user/register", 
     body("email").isEmail(),
     body("password").isLength({min: 3}),
@@ -45,6 +45,7 @@ userRouter.post("/user/register",
     }
 )
 
+// Login user 
 userRouter.post("/user/login", 
     body("email").isEmail(),
     body("password").isLength({min: 3}),
@@ -76,6 +77,7 @@ userRouter.post("/user/login",
     }
 )
 
+// Private route  *Not used*
 userRouter.get("/private", validateToken, async (req: Request, res: Response) => {
     res.status(200).json({message: "This is protected secure route!"})
     return

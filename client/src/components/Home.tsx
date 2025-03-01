@@ -13,6 +13,7 @@ const Home = () => {
   const [newBoardName, setNewBoardName] = useState('');
 
   useEffect(() => {
+    // Get existing boards 
     const fetchBoards = async () => {
       const token = localStorage.getItem('token');
       try {
@@ -32,6 +33,7 @@ const Home = () => {
     fetchBoards();
   }, []);
 
+  // Create new board 
   const createBoard = async () => {
     if (!newBoardName.trim()) {
       return;
@@ -56,18 +58,19 @@ const Home = () => {
 
   return (
     <div>
-      <Box sx={{ display: 'flex', margin: 2 }}>
+      <Box sx={{ display: 'flex',flexWrap: "wrap", justifyContent: "center" }}>
         <TextField
           label="Board name"
           variant="outlined"
           value={newBoardName}
           onChange={(e) => setNewBoardName(e.target.value)}
+          sx={{margin: 2}}
         />
-        <Button onClick={createBoard} variant="outlined"> Add a board </Button>
+        <Button onClick={createBoard} variant="outlined" sx={{margin: 2, border: '1px solid pink'}}> Add a board </Button>
       </Box>
       <Box sx={{ display: 'flex', margin: 2 }}>
         {boards.map((board) => (
-          <Card sx={{ maxWidth: 345, minWidth: 100, margin: 1, border: '1px solid blue' }} key={board._id}>
+          <Card sx={{ maxWidth: 345, minWidth: 100, margin: 1, border: '1px solid pink' }} key={board._id}>
             {' '}
             <CardActionArea component={Link} to={`/Kanban/${board._id}`}>
               <CardContent>

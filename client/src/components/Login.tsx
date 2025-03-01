@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Box, Button, TextField } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 
+// Login function sends data to backend, stores the token and redirects the user to /Home
 const Login = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');

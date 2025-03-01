@@ -6,6 +6,7 @@ import Home from "./components/Home";
 import Kanban from "./components/Kanban";
 import "./App.css"
 
+// App routes and structure
 function App() {
   return ( 
     <BrowserRouter>

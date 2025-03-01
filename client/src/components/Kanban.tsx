@@ -92,7 +92,7 @@ const Kanban = () => {
         throw new Error('Error creating ticket');
       }
       const newTicket = await response.json();
-      // add new ticket to the right column in the state
+      // Update column state by adding a new ticket to the right column
       setColumns((prevColumns) =>
         prevColumns.map((column) =>
           column._id === columnId ? { ...column, tickets: [...column.tickets, newTicket.newTicket] } : column
@@ -104,6 +104,7 @@ const Kanban = () => {
       console.log(`Error creating ticket, ${error.message}`);
     }
   };
+
   // Delete ticket
   const deleteTicket = async (ticketId: string, columnId: string) => {
     const token = localStorage.getItem('token');
@@ -115,6 +116,7 @@ const Kanban = () => {
       if (!response.ok) {
         throw new Error('Error deleting ticket');
       }
+      // Update column state by removing a ticket from the right column
       setColumns((prevColumns) =>
         prevColumns.map((column) =>
           column._id === columnId
@@ -127,8 +129,8 @@ const Kanban = () => {
     }
   };
 
-  //TicketNameChange is called when input field is changed
-  //It updates the newTicketName state with the tickets name for a specific column
+  // TicketNameChange is called when input field is changed
+  // Updates the newTicketName state with the tickets name for a specific column, removes issue with all ticket text field states changing at the same time
   const TicketNameChange = (columnId: string, name: string) => {
     setNewTicketName((prev) => ({ ...prev, [columnId]: name }));
   };
@@ -166,13 +168,13 @@ const Kanban = () => {
       setColumns(reorderColumns);
     }
     // Drag and drop for tickets
-    // Find index for destination and source columns and theyre objects
+    // Find destination and source columns by ID's
     const destinationColumnIndex = columns.findIndex((column) => column._id === destination.droppableId);
     const sourceColumnIndex = columns.findIndex((column) => column._id === source.droppableId);
     const destinationColumn = columns[destinationColumnIndex];
     const sourceColumn = columns[sourceColumnIndex];
 
-    // Dragged ticket found using id
+    // Find dragged ticket using ID
     const draggedTicket = sourceColumn.tickets.find((ticket) => ticket._id === draggableId);
     const newSourceTickets = sourceColumn.tickets;
     newSourceTickets.splice(source.index, 1);
@@ -180,11 +182,12 @@ const Kanban = () => {
     const newDestinationTicket = destinationColumn.tickets;
     newDestinationTicket.splice(destination.index, 0, draggedTicket); 
 
+    // New columns with updated ticket places
     const newColumns = [...columns];
     newColumns[sourceColumnIndex] = { ...sourceColumn, tickets: newSourceTickets };
     newColumns[destinationColumnIndex] = { ...destinationColumn, tickets: newDestinationTicket };
     
-    // Update state
+    // Update state with new column and ticket position
     setColumns(newColumns);
   };
 

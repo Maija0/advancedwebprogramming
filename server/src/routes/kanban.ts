@@ -22,8 +22,8 @@ kanbanRouter.post("/boards",validateToken, async (req: CustomRequest, res: Respo
     }
 })
 
-// get users boards
-kanbanRouter.get("/boards",validateToken, async (req: CustomRequest, res: Response) => { 
+// get specific user's boards
+kanbanRouter.get("/boards", validateToken, async (req: CustomRequest, res: Response) => { 
     try {
         const boards = await Board.find({userId: req.user?.id})
         if (!boards){
@@ -39,7 +39,7 @@ kanbanRouter.get("/boards",validateToken, async (req: CustomRequest, res: Respon
 })
 
 
-// create a new column
+// create a new column for a specific user
 kanbanRouter.post("/columns",
     body("name"),
     body("boardId"),
@@ -56,7 +56,7 @@ kanbanRouter.post("/columns",
     }
 })
 
-//get columns with boardId
+// get columns with board ID
 kanbanRouter.get("/columns/:boardId",validateToken, async (req: CustomRequest, res: Response) => { 
     try {
         const {boardId} = req.params;
@@ -75,7 +75,7 @@ kanbanRouter.get("/columns/:boardId",validateToken, async (req: CustomRequest, r
     }
 })
 
-// delete column with column id
+// delete column with column ID
 kanbanRouter.delete("/columns/:columnId", validateToken, async (req: CustomRequest, res: Response) => { 
     try {
         const {columnId} = req.params;
@@ -95,7 +95,7 @@ kanbanRouter.delete("/columns/:columnId", validateToken, async (req: CustomReque
     }
 })
 
-// Create ticket
+// Create ticket for a specific column
 kanbanRouter.post("/tickets",
     body("name"),
     body("columnId"),
@@ -113,7 +113,7 @@ kanbanRouter.post("/tickets",
 })
 
 
-// Get ticket
+// Get a ticket using column ID
 kanbanRouter.get("/tickets/:columnId",validateToken, async (req: CustomRequest, res: Response) => { 
     try {
         const {columnId} = req.params;
@@ -132,7 +132,7 @@ kanbanRouter.get("/tickets/:columnId",validateToken, async (req: CustomRequest, 
     }
 })
 
-// delete ticket with ticket id
+// Delete ticket with ticket ID
 kanbanRouter.delete("/tickets/:ticketId", validateToken, async (req: CustomRequest, res: Response) => { 
     try {
         const {ticketId} = req.params;

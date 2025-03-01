@@ -7,11 +7,12 @@ dotenv.config()
 export interface CustomRequest extends Request {
     user?: JwtPayload
 }
-export interface CustomJwt extends JwtPayload {
+export interface CustomJwt extends JwtPayload { //custom jwt that has id & email, used to access user id
     id: string,
     email: string,
 }
 
+// Validate token middelware
 export const validateToken = (req: CustomRequest, res: Response, next: NextFunction) => {
     const auth = req.header('authorization')
     if(!auth) {
