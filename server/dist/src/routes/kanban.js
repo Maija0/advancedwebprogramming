@@ -90,7 +90,7 @@ kanbanRouter.put("/columns/:columnId", validateToken_1.validateToken, async (req
         const { columnId } = req.params;
         const { name } = req.body;
         if (!name) {
-            res.status(404).json({ message: "Column name needed" });
+            res.status(400).json({ message: "Column name needed" });
             return;
         }
         const column = await Column_1.Column.findById(columnId);
@@ -130,7 +130,7 @@ kanbanRouter.delete("/columns/:columnId", validateToken_1.validateToken, async (
         const { columnId } = req.params;
         const column = await Column_1.Column.findById(columnId);
         if (!column) {
-            res.status(404).json({ message: "Column wasn't found" });
+            res.status(404).json({ message: "Column not found" });
             return;
         }
         await Ticket_1.Ticket.deleteMany({ columnId });
