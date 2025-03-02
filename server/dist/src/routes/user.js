@@ -82,7 +82,7 @@ userRouter.post("/user/login", (0, express_validator_1.body)("email").isEmail(),
                 email: user.email,
                 id: user._id.toString(),
             };
-            const token = jsonwebtoken_1.default.sign(jwtPayload, process.env.SECRET, { expiresIn: "1d" });
+            const token = jsonwebtoken_1.default.sign(jwtPayload, process.env.SECRET, { expiresIn: "1h" });
             res.status(200).json({ success: true, token });
             return;
         }

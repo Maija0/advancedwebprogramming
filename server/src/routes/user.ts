@@ -62,7 +62,7 @@ userRouter.post("/user/login",
                     email: user.email,
                     id: user._id.toString(),
                 }
-                const token: string = jwt.sign(jwtPayload, process.env.SECRET as string, { expiresIn: "1d"})
+                const token: string = jwt.sign(jwtPayload, process.env.SECRET as string, { expiresIn: "1h"})
 
                 res.status(200).json({success:true, token})
                 return
