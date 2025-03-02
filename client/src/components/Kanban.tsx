@@ -166,8 +166,9 @@ const Kanban = () => {
       const reorderColumns = [...columns];
       const [removedColumn] = reorderColumns.splice(source.index, 1);
       reorderColumns.splice(destination.index,0, removedColumn);
+      
       setColumns(reorderColumns);
-    }
+    } else {
     // Drag and drop for tickets
     // Find destination and source columns by ID's
     const destinationColumnIndex = columns.findIndex((column) => column._id === destination.droppableId);
@@ -190,6 +191,7 @@ const Kanban = () => {
     
     // Update state with new column and ticket position
     setColumns(newColumns);
+    }
   };
 
   return (
@@ -289,4 +291,5 @@ const Kanban = () => {
   </div>
 );
 }
+
 export default Kanban;

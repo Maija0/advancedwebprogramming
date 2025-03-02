@@ -66,7 +66,7 @@ const Home = () => {
           onChange={(e) => setNewBoardName(e.target.value)}
           sx={{margin: 2}}
         />
-        <Button onClick={createBoard} variant="outlined" sx={{margin: 2, border: '1px solid pink', color:"black"}}> Add a board </Button>
+        <Button onClick={createBoard} variant="outlined" sx={{margin: 2, border: '1px solid pink', color:"black", fontFamily: "Comfortaa, sans-serif", textTransform: "none"}}> Add a board </Button>
       </Box>
       <Box sx={{ display: 'flex', margin: 2 }}>
         {boards.map((board) => (
