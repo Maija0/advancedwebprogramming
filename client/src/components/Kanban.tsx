@@ -17,6 +17,8 @@ const Kanban = () => {
   const [columns, setColumns] = useState<Column[]>([]);
   const [newColumnName, setNewColumnName] = useState('');
   const [newTicketName, setNewTicketName] = useState<{ [key: string]: string }>({});
+  const [renamedColumnName, setRenamedColumnName] = useState<{ [key: string]: string }>({});
+
 
   // Fetch columns & tickets
   const fetchColumns = async () => {
@@ -79,6 +81,31 @@ const Kanban = () => {
       console.log(`Error creating column, ${error.message}`);
     }
   };
+
+  // Rename column
+  const renameColumn = async (columnId: string, editedName: string) => {
+    if (!editedName.trim()) {
+      return;
+    }
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:3000/api/columns/${columnId}`, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editedName }),
+      });
+      if (!response.ok) {
+        throw new Error('Error renaming column');
+      }
+      setColumns((prevColumns) => prevColumns.map((column) => column._id === columnId ? {...column, name: renamedColumnName[columnId]} :column
+    ));
+    setRenamedColumnName(""); //clear textfield
+    } catch (error) {
+      console.log(`Error renaming column, ${error.message}`);
+    }
+  };
+  
+
 
   // Create a new ticket
   const createTicket = async (columnId: string) => {
@@ -166,7 +193,6 @@ const Kanban = () => {
       const reorderColumns = [...columns];
       const [removedColumn] = reorderColumns.splice(source.index, 1);
       reorderColumns.splice(destination.index,0, removedColumn);
-      
       setColumns(reorderColumns);
     } else {
     // Drag and drop for tickets
@@ -232,6 +258,9 @@ const Kanban = () => {
                   {column.name}
                 </Typography>
                 <Button sx={{color: "black",fontSize: 10,border: "1px dotted red ", fontFamily: "Comfortaa, sans-serif", textTransform: "none"}} onClick={() => deleteColumn(column._id)}> Delete Column </Button>
+                <TextField label="Rename Column" value={renamedColumnName[column._id] ||""} onChange={(e) => setRenamedColumnName((prev) => ({...prev, [column._id]: e.target.value}))}/>
+                <Button sx={{color: "black", fontSize: 10,border: "1px dotted red ", fontFamily: "Comfortaa, sans-serif", textTransform: "none",marginBottom:"35px"}} onClick={() => renameColumn(column._id, renamedColumnName[column._id])}> Rename Column </Button>
+
                 <Droppable droppableId={column._id}>
                   {(provided) => (
                     <div ref={provided.innerRef} {...provided.droppableProps}

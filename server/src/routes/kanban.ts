@@ -8,7 +8,7 @@ import { Ticket } from "../models/Ticket";
 const kanbanRouter: Router = Router()
 kanbanRouter.use(express.json())
 
-// create a new board 
+// Create a new board 
 kanbanRouter.post("/boards",validateToken, async (req: CustomRequest, res: Response) => { 
     try {
         console.log("User from token:", req.user);
@@ -22,7 +22,7 @@ kanbanRouter.post("/boards",validateToken, async (req: CustomRequest, res: Respo
     }
 })
 
-// get specific user's boards
+// Get specific user's boards
 kanbanRouter.get("/boards", validateToken, async (req: CustomRequest, res: Response) => { 
     try {
         const boards = await Board.find({userId: req.user?.id})
@@ -39,7 +39,7 @@ kanbanRouter.get("/boards", validateToken, async (req: CustomRequest, res: Respo
 })
 
 
-// create a new column for a specific user
+// Create a new column for a specific user
 kanbanRouter.post("/columns",
     body("name"),
     body("boardId"),
@@ -56,7 +56,31 @@ kanbanRouter.post("/columns",
     }
 })
 
-// get columns with board ID
+// Rename column
+kanbanRouter.put("/columns/:columnId", validateToken, async (req: CustomRequest, res: Response) => { 
+    try {
+        const {columnId} = req.params;
+        const {name} = req.body;
+        if (!name) {
+            res.status(400).json({message: "Column name needed"});
+            return
+        }
+
+        const column = await Column.findById(columnId);
+        if (!column) {
+            res.status(404).json({message: "Column not found"});
+            return
+        }
+        column.name = name;
+        await column.save()
+        res.status(200).json({message: "Column renamed successfully", column});
+    } catch (error: any) {
+        console.log("Error renaming column", error)
+        res.status(500).json({error: "Internal Server Error"})
+    }
+})
+
+// Get columns with board ID
 kanbanRouter.get("/columns/:boardId",validateToken, async (req: CustomRequest, res: Response) => { 
     try {
         const {boardId} = req.params;
@@ -75,14 +99,14 @@ kanbanRouter.get("/columns/:boardId",validateToken, async (req: CustomRequest, r
     }
 })
 
-// delete column with column ID
+// Delete column with column ID
 kanbanRouter.delete("/columns/:columnId", validateToken, async (req: CustomRequest, res: Response) => { 
     try {
         const {columnId} = req.params;
 
         const column = await Column.findById(columnId);
         if (!column){
-            res.status(404).json({message: "Column wasn't found"});
+            res.status(404).json({message: "Column not found"});
             return
         }
         await Ticket.deleteMany({columnId});

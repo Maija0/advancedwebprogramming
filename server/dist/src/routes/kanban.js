@@ -41,7 +41,7 @@ const Column_1 = require("../models/Column");
 const Ticket_1 = require("../models/Ticket");
 const kanbanRouter = (0, express_1.Router)();
 kanbanRouter.use(express_1.default.json());
-// create a new board 
+// Create a new board 
 kanbanRouter.post("/boards", validateToken_1.validateToken, async (req, res) => {
     try {
         console.log("User from token:", req.user);
@@ -55,7 +55,7 @@ kanbanRouter.post("/boards", validateToken_1.validateToken, async (req, res) => 
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// get specific user's boards
+// Get specific user's boards
 kanbanRouter.get("/boards", validateToken_1.validateToken, async (req, res) => {
     try {
         const boards = await Board_1.Board.find({ userId: req.user?.id });
@@ -70,7 +70,7 @@ kanbanRouter.get("/boards", validateToken_1.validateToken, async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// create a new column for a specific user
+// Create a new column for a specific user
 kanbanRouter.post("/columns", (0, express_validator_1.body)("name"), (0, express_validator_1.body)("boardId"), validateToken_1.validateToken, async (req, res) => {
     try {
         const { name, boardId } = req.body;
@@ -84,7 +84,30 @@ kanbanRouter.post("/columns", (0, express_validator_1.body)("name"), (0, express
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// get columns with board ID
+// Rename column
+kanbanRouter.put("/columns/:columnId", validateToken_1.validateToken, async (req, res) => {
+    try {
+        const { columnId } = req.params;
+        const { name } = req.body;
+        if (!name) {
+            res.status(404).json({ message: "Column name needed" });
+            return;
+        }
+        const column = await Column_1.Column.findById(columnId);
+        if (!column) {
+            res.status(404).json({ message: "Column not found" });
+            return;
+        }
+        column.name = name;
+        await column.save();
+        res.status(200).json({ message: "Column renamed successfully", column });
+    }
+    catch (error) {
+        console.log("Error renaming column", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+// Get columns with board ID
 kanbanRouter.get("/columns/:boardId", validateToken_1.validateToken, async (req, res) => {
     try {
         const { boardId } = req.params;
@@ -101,7 +124,7 @@ kanbanRouter.get("/columns/:boardId", validateToken_1.validateToken, async (req,
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// delete column with column ID
+// Delete column with column ID
 kanbanRouter.delete("/columns/:columnId", validateToken_1.validateToken, async (req, res) => {
     try {
         const { columnId } = req.params;
