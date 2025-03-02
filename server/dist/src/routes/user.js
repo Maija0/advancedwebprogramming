@@ -44,7 +44,7 @@ const validateToken_1 = require("../middleware/validateToken");
 const User_1 = require("../models/User");
 const userRouter = (0, express_1.Router)();
 userRouter.use(express_1.default.json());
-//userRouter.use(express.static(path.join(__dirname, "../public")))
+// Register user 
 userRouter.post("/user/register", (0, express_validator_1.body)("email").isEmail(), (0, express_validator_1.body)("password").isLength({ min: 3 }), async (req, res) => {
     const errors = (0, express_validator_1.validationResult)(req);
     if (!errors.isEmpty()) {
@@ -69,6 +69,7 @@ userRouter.post("/user/register", (0, express_validator_1.body)("email").isEmail
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+// Login user 
 userRouter.post("/user/login", (0, express_validator_1.body)("email").isEmail(), (0, express_validator_1.body)("password").isLength({ min: 3 }), async (req, res) => {
     try {
         const user = await User_1.User.findOne({ email: req.body.email });
@@ -93,6 +94,7 @@ userRouter.post("/user/login", (0, express_validator_1.body)("email").isEmail(),
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+// Private route  *Not used*
 userRouter.get("/private", validateToken_1.validateToken, async (req, res) => {
     res.status(200).json({ message: "This is protected secure route!" });
     return;

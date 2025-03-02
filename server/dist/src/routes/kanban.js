@@ -55,7 +55,7 @@ kanbanRouter.post("/boards", validateToken_1.validateToken, async (req, res) => 
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// get users boards
+// get specific user's boards
 kanbanRouter.get("/boards", validateToken_1.validateToken, async (req, res) => {
     try {
         const boards = await Board_1.Board.find({ userId: req.user?.id });
@@ -70,7 +70,7 @@ kanbanRouter.get("/boards", validateToken_1.validateToken, async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// create a new column
+// create a new column for a specific user
 kanbanRouter.post("/columns", (0, express_validator_1.body)("name"), (0, express_validator_1.body)("boardId"), validateToken_1.validateToken, async (req, res) => {
     try {
         const { name, boardId } = req.body;
@@ -84,7 +84,7 @@ kanbanRouter.post("/columns", (0, express_validator_1.body)("name"), (0, express
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-//get columns with boardId
+// get columns with board ID
 kanbanRouter.get("/columns/:boardId", validateToken_1.validateToken, async (req, res) => {
     try {
         const { boardId } = req.params;
@@ -101,7 +101,7 @@ kanbanRouter.get("/columns/:boardId", validateToken_1.validateToken, async (req,
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// delete column with column id
+// delete column with column ID
 kanbanRouter.delete("/columns/:columnId", validateToken_1.validateToken, async (req, res) => {
     try {
         const { columnId } = req.params;
@@ -119,7 +119,7 @@ kanbanRouter.delete("/columns/:columnId", validateToken_1.validateToken, async (
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// Create ticket
+// Create ticket for a specific column
 kanbanRouter.post("/tickets", (0, express_validator_1.body)("name"), (0, express_validator_1.body)("columnId"), validateToken_1.validateToken, async (req, res) => {
     try {
         const { name, columnId } = req.body;
@@ -133,7 +133,7 @@ kanbanRouter.post("/tickets", (0, express_validator_1.body)("name"), (0, express
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// Get ticket
+// Get a ticket using column ID
 kanbanRouter.get("/tickets/:columnId", validateToken_1.validateToken, async (req, res) => {
     try {
         const { columnId } = req.params;
@@ -150,7 +150,7 @@ kanbanRouter.get("/tickets/:columnId", validateToken_1.validateToken, async (req
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
-// delete ticket with ticket id
+// Delete ticket with ticket ID
 kanbanRouter.delete("/tickets/:ticketId", validateToken_1.validateToken, async (req, res) => {
     try {
         const { ticketId } = req.params;

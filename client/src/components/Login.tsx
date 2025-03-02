@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
 
 // Login function sends data to backend, stores the token and redirects the user to /Home
@@ -30,7 +30,7 @@ const Login = () => {
 
   return (
     <div>
-      <h2>Login</h2>
+      <Typography variant="h5" sx={{ textAlign: 'center', margin:2  }}> Login</Typography>
       <Box
         component="form"
         sx={{

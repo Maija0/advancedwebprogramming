@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 
 // Register function sends data to backend (email, password) and redirects to login when successful
@@ -29,7 +29,7 @@ const Register = () => {
   const [password, setPassword] = useState<string>('');
   return (
     <div>
-      <h2>Register</h2>
+      <Typography variant="h5" sx={{ textAlign: 'center', margin:2  }}> Register</Typography>
       <Box
         component="form"
         sx={{

@@ -4,6 +4,7 @@ import { Grid, Typography, Paper, TextField, Button, Box } from '@mui/material/'
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
+import AddIcon from '@mui/icons-material/Add';
 
 interface Column {
   _id: string;
@@ -105,6 +106,23 @@ const Kanban = () => {
     }
   };
 
+  // Delete column
+  const deleteColumn = async (columnId: string) => {
+    const token = localStorage.getItem('token');
+    try {
+      const response = await fetch(`http://localhost:3000/api/columns/${columnId}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      });
+      if (!response.ok) {
+        throw new Error('Error deleting column');
+      }
+      setColumns((prevColumns) => prevColumns.filter((column) => column._id !== columnId));
+    } catch (error) {
+      console.log(`Error deleting column, ${error.message}`);
+    }
+  };
+  
   // Delete ticket
   const deleteTicket = async (ticketId: string, columnId: string) => {
     const token = localStorage.getItem('token');
@@ -133,23 +151,6 @@ const Kanban = () => {
   // Updates the newTicketName state with the tickets name for a specific column, removes issue with all ticket text field states changing at the same time
   const TicketNameChange = (columnId: string, name: string) => {
     setNewTicketName((prev) => ({ ...prev, [columnId]: name }));
-  };
-
-  // Delete column
-  const deleteColumn = async (columnId: string) => {
-    const token = localStorage.getItem('token');
-    try {
-      const response = await fetch(`http://localhost:3000/api/columns/${columnId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      });
-      if (!response.ok) {
-        throw new Error('Error deleting column');
-      }
-      setColumns((prevColumns) => prevColumns.filter((column) => column._id !== columnId));
-    } catch (error) {
-      console.log(`Error deleting column, ${error.message}`);
-    }
   };
 
   // Defines drag and drop and error handling
@@ -199,32 +200,36 @@ const Kanban = () => {
           variant="outlined"
           value={newColumnName}
           onChange={(e) => setNewColumnName(e.target.value)}
-          sx={{ margin: 1 }}
+          sx={{ margin: 1, minWidth:"10vh"}}
         />
-        <Button onClick={createColumn}> Add a column </Button>
+        <Button sx={{color: "black", fontFamily: "Comfortaa, sans-serif", textTransform: "none"}} onClick={createColumn}> Add a column </Button>
       </Box>
       <DragDropContext onDragEnd={handleDragnAndDrop}>
         <Droppable droppableId="ROOT" type="group" direction="horizontal">
         {(provided) => (
-        <Grid container spacing={2} {...provided.droppableProps} ref={provided.innerRef}>
+        <Grid container spacing={1} sx={{ flexWrap: "nowrap", overflowX: "auto", display:"flex"}}{...provided.droppableProps} ref={provided.innerRef}>
           {columns.map((column, index) => (
             <Draggable key={column._id} draggableId={column._id} index={index}>
               {(provided) => (
-            <Grid item ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
+            <Grid item sx={{ flex: "1 1 auto", maxWidth:"30vh" }} ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
               <Paper
+              /*flex-grow 1, flex-shrink 1, flex-basis auto */
                 sx={{
-                  width: 100,
+                  flex: "1 1 auto",
                   padding: 1,
                   display: 'flex',
-                  border: '1px solid blue',
+                  border: '1px solid red',
                   margin: 1,
                   flexDirection: 'column',
+                  minHeight: "60vh",
+                  minWidth:"10vh",
+                  flexGrow: 1,
                 }}
               >
-                <Typography variant="h6" sx={{ textAlign: 'center', fontSize: 15 }}>
+                <Typography variant="h6" sx={{ textAlign: 'center', fontSize: 15, fontFamily: "Comfortaa, sans-serif" }}>
                   {column.name}
                 </Typography>
-                <Button onClick={() => deleteColumn(column._id)}> Delete Column </Button>
+                <Button sx={{color: "black",fontSize: 10,border: "1px dotted red ", fontFamily: "Comfortaa, sans-serif", textTransform: "none"}} onClick={() => deleteColumn(column._id)}> Delete Column </Button>
                 <Droppable droppableId={column._id}>
                   {(provided) => (
                     <div ref={provided.innerRef} {...provided.droppableProps}
@@ -240,12 +245,12 @@ const Kanban = () => {
                               key={ticket._id}
                               sx={{
                                 padding: 1,
-                                border: '1px solid blue',
+                                border: '1px solid Black',
                                 marginBottom: 1,
                               }}
                             >
                               <Typography sx={{ fontSize: 15, width: "100%", fontWeight: "bold"}}>{ticket.name}</Typography>
-                                <Paper sx={{border: "1px solid black"}}>
+                                <Paper sx={{border: "1px dotted black"}}>
                                     <Typography sx={{ fontSize: 12, padding: 1 }}>Task will be specified under here</Typography>
                                 </Paper>
                               <IconButton
@@ -264,13 +269,13 @@ const Kanban = () => {
                   )}
                 </Droppable>
                 <TextField
-                  label="new ticket"
+                  label="New ticket"
                   variant="outlined"
                   value={newTicketName[column._id] || ''}
                   onChange={(e) => TicketNameChange(column._id, e.target.value)}
                   sx={{ margin: 1 }}
                 />
-                <Button onClick={() => createTicket(column._id)}> Add a ticket </Button>
+                <IconButton onClick={() => createTicket(column._id)}>  <AddIcon/></IconButton>
               </Paper>
             </Grid>
           )}
